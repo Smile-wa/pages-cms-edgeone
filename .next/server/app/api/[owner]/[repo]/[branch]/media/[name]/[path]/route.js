@@ -1,7 +1,7 @@
 var R=require("../../../../../../../../chunks/[turbopack]_runtime.js")("server/app/api/[owner]/[repo]/[branch]/media/[name]/[path]/route.js")
 R.c("server/chunks/[root-of-the-server]__0dybe9_._.js")
 R.c("server/chunks/lib_0wa.y5e._.js")
-R.c("server/chunks/[root-of-the-server]__0.b2wk3._.js")
+R.c("server/chunks/[root-of-the-server]__0jqc1v-._.js")
 R.c("server/chunks/node_modules_0h9a1r9._.js")
 R.c("server/chunks/node_modules_04r74b-._.js")
 R.c("server/chunks/lib_token_ts_0mv7rsy._.js")

@@ -64,7 +64,7 @@ DATABASE_URL="postgresql://用户名:密码@主机:端口/数据库名?sslmode=r
 | `CRYPTO_KEY` | 随机字符串 | 加密密钥 |
 | `GITHUB_APP_ID` | `123456` | GitHub App ID |
 | `GITHUB_APP_NAME` | `my-pages-cms` | GitHub App machine name |
-| `GITHUB_APP_PRIVATE_KEY` | PEM 内容 | GitHub App 私钥 |
+| `GITHUB_APP_PRIVATE_KEY_1` / `_2` / ... | PEM 分片 | GitHub App 私钥；EdgeOne 单变量放不下时使用分片 |
 | `GITHUB_APP_WEBHOOK_SECRET` | 随机字符串 | Webhook 签名密钥 |
 | `GITHUB_APP_CLIENT_ID` | `Iv1.xxx` | OAuth Client ID |
 | `GITHUB_APP_CLIENT_SECRET` | `xxx` | OAuth Client Secret |
@@ -76,19 +76,35 @@ DATABASE_URL="postgresql://用户名:密码@主机:端口/数据库名?sslmode=r
 openssl rand -base64 32
 ```
 
-### 3.2 GitHub App 私钥写法
+### 3.2 GitHub App 私钥分片（重要）
 
-EdgeOne 的环境变量是单行值，建议把 PEM 的换行转成字面 `\n` 后再粘贴。把私钥保存为本地 `private-key.pem`，执行：
+EdgeOne 单个环境变量的值上限约 **1000 字节**，而 GitHub App 的 PEM 私钥通常是 1600～3400 字节，直接配置会被拒绝。
+
+项目已支持把私钥拆成多个环境变量，在运行时自动拼接。把私钥保存为本地 `private-key.pem`，在项目根目录执行：
 
 ```bash
-node <<'NODE'
-const fs = require('fs');
-const key = fs.readFileSync('private-key.pem', 'utf8').trim().replace(/\r?\n/g, '\\n');
-console.log(key);
-NODE
+npm run key:split -- private-key.pem
 ```
 
-输出是一整行，复制整行作为 `GITHUB_APP_PRIVATE_KEY` 的值。代码会自动把 `\n` 还原成真实换行。
+输出类似：
+
+```text
+# 4 chunk(s), 1704 bytes total
+GITHUB_APP_PRIVATE_KEY_1=-----BEGIN RSA PRIVATE KEY-----\nMIIE...
+GITHUB_APP_PRIVATE_KEY_2=...
+GITHUB_APP_PRIVATE_KEY_3=...
+GITHUB_APP_PRIVATE_KEY_4=...\n-----END RSA PRIVATE KEY-----
+```
+
+在 EdgeOne 控制台**逐条创建** `GITHUB_APP_PRIVATE_KEY_1`、`GITHUB_APP_PRIVATE_KEY_2`……直到最后一个分片。
+
+注意：
+
+- 分片编号从 1 开始，必须连续，不能中间缺号。
+- 使用分片时**不要**再设置 `GITHUB_APP_PRIVATE_KEY`，否则单变量值会优先生效。
+- 默认每片最多 450 字节，留出足够安全余量；如需调整可用 `--max-bytes 450`。
+- 代码会先把 `\n` 还原成真实换行，再交给 Octokit，因此不需要手动改私钥内容。
+- 本地开发仍可直接使用单行 `GITHUB_APP_PRIVATE_KEY`（见 `.env.local.example`），两种方式兼容。
 
 ### 3.3 邮件与可选变量
 
@@ -154,7 +170,7 @@ FILE_TTL_MIN=1440
 
 - `BASE_URL` 使用正式域名，例如 `https://cms.example.com`
 - `DATABASE_URL` 带 `sslmode=require`
-- `GITHUB_APP_PRIVATE_KEY` 是单行 `\n` 形式
+- GitHub App 私钥按 `GITHUB_APP_PRIVATE_KEY_1`、`_2`……分片配置，不要同时设置单变量 `GITHUB_APP_PRIVATE_KEY`
 - `BETTER_AUTH_SECRET` 不要在构建日志中暴露
 
 构建阶段即使没有 `BASE_URL` 也能完成（代码会回退到占位 URL），但**运行时必须设置**，否则认证相关功能会报错。
@@ -229,7 +245,7 @@ GitHub App 需要配置：
 
 **方式 A：直接使用已有的 GitHub App**
 
-到 GitHub App 设置页修改上面的 Callback URL 和 Webhook URL，并确认 EdgeOne 中的 `GITHUB_APP_CLIENT_ID`、`GITHUB_APP_CLIENT_SECRET`、`GITHUB_APP_PRIVATE_KEY`、`GITHUB_APP_WEBHOOK_SECRET` 与这个 App 一致。
+到 GitHub App 设置页修改上面的 Callback URL 和 Webhook URL，并确认 EdgeOne 中的 `GITHUB_APP_CLIENT_ID`、`GITHUB_APP_CLIENT_SECRET`、私钥分片（`GITHUB_APP_PRIVATE_KEY_1` 等）、`GITHUB_APP_WEBHOOK_SECRET` 与这个 App 一致。
 
 **方式 B：用助手新建一个生产用 GitHub App**
 
@@ -247,7 +263,7 @@ npm run setup:github-app -- --base-url https://cms.example.com
 --no-open
 ```
 
-助手会打开浏览器完成 GitHub App 注册，并输出新的环境变量值；把这些新值更新到 EdgeOne 控制台。若使用 `--env .env.local`，注意该文件不要提交到仓库。
+助手会打开浏览器完成 GitHub App 注册，并输出新的环境变量值；把这些新值更新到 EdgeOne 控制台。私钥需要按 3.2 节先分片再配置。若使用 `--env .env.local`，注意该文件不要提交到仓库。
 
 > 如果你之前用本地地址创建过 GitHub App，必须完成方式 A 或 B，否则登录后回调会失败。
 
@@ -277,7 +293,9 @@ npm run setup:github-app -- --base-url https://cms.example.com
 | 构建失败，提示缺少数据库 | 构建环境有误连数据库的步骤 | 确认 `postbuild` 已移除；迁移改为手动执行 |
 | 构建失败，提示 `BASE_URL` | 旧代码仍在模块顶层抛错 | 确认 `lib/base-url.ts` 已更新 |
 | 构建时 Google Fonts 下载失败 | 构建容器无法出网 | 开放出网，或改成本地字体 |
+| EdgeOne 拒绝保存 `GITHUB_APP_PRIVATE_KEY` | 变量值超过约 1000 字节上限 | 按 3.2 节用 `npm run key:split` 拆成 `_1`、`_2`……分片 |
 | 登录后跳转回首页 | GitHub App 回调地址还是本地地址 | 重新执行第 8 步 |
+| 获取 installation token 报私钥错误 | 分片有缺号，或同时设置了错误的单变量 | 确认 `_1` 起连续无缺口，且未设置 `GITHUB_APP_PRIVATE_KEY` |
 | 所有写操作返回 403 | CSRF 校验拿不到正确 Host | 确认 EdgeOne 透传 `Origin` / `Host`；代码已兼容 `x-forwarded-host` |
 | 数据库连接数打满 | Serverless 并发 × 连接池过大 | 调低 `POSTGRES_MAX_CONNECTIONS`，或使用数据库池化地址 |
 | Webhook 事件偶尔丢失 | 平台不支持 `after()` 后台任务 | 代码已先等待最多 8 秒；如仍有问题，可改为完全同步处理 |

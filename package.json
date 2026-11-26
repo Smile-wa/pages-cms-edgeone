@@ -9,6 +9,7 @@
   "private": true,
   "scripts": {
     "setup:github-app": "node scripts/setup-github-app.mjs",
+    "key:split": "node scripts/split-private-key.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

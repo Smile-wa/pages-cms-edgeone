@@ -15,6 +15,7 @@ import { User } from "@/types/user";
 import { getGithubAccount } from "@/lib/github-account";
 import { createHttpError } from "@/lib/api-error";
 import { collaboratorMatchesUserForRepo } from "@/lib/collaborator-access";
+import { getGithubAppPrivateKey } from "@/lib/github-app-key";
 
 const installationTokenRefreshInFlight = new Map<number, Promise<string>>();
 
@@ -63,8 +64,7 @@ const getToken = cache(async (
 const getInstallationToken = cache(async (owner: string, repo: string) => {
   const app = new App({
     appId: process.env.GITHUB_APP_ID!,
-    // EdgeOne stores env values as single-line strings; allow \n escapes.
-    privateKey: process.env.GITHUB_APP_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+    privateKey: getGithubAppPrivateKey(),
   });
 
   const repoInstallation = await app.octokit.request(
