@@ -1,0 +1,17 @@
+{
+  "node": {
+    "60256b5c1d7f164a9baf9d8f724c462443c31bc03a": {
+      "workers": {
+        "app/(main)/page": {
+          "moduleId": 90975,
+          "async": true,
+          "exportedName": "handleCopyTemplate",
+          "filename": "lib/actions/template.ts"
+        }
+      },
+      "exportedName": "handleCopyTemplate",
+      "filename": "lib/actions/template.ts"
+    }
+  },
+  "edge": {}
+}

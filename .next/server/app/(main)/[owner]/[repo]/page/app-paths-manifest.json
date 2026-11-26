@@ -1,0 +1,3 @@
+{
+  "/(main)/[owner]/[repo]/page": "app/(main)/[owner]/[repo]/page.js"
+}

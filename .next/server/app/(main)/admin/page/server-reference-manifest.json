@@ -1,0 +1,41 @@
+{
+  "node": {
+    "00987da5071ebbdb6c2c651a66a6f2fdf29884da60": {
+      "workers": {
+        "app/(main)/admin/page": {
+          "moduleId": 691244,
+          "async": true,
+          "exportedName": "logoutAllUsers",
+          "filename": "lib/actions/admin.ts"
+        }
+      },
+      "exportedName": "logoutAllUsers",
+      "filename": "lib/actions/admin.ts"
+    },
+    "00f2f53a23965ee8fa4f2dde84c9559c588ced1e76": {
+      "workers": {
+        "app/(main)/admin/page": {
+          "moduleId": 691244,
+          "async": true,
+          "exportedName": "resetGlobalCache",
+          "filename": "lib/actions/admin.ts"
+        }
+      },
+      "exportedName": "resetGlobalCache",
+      "filename": "lib/actions/admin.ts"
+    },
+    "401de7aef7055e59b98b64dfa81b0f31a683b5852e": {
+      "workers": {
+        "app/(main)/admin/page": {
+          "moduleId": 691244,
+          "async": true,
+          "exportedName": "logoutUserSessions",
+          "filename": "lib/actions/admin.ts"
+        }
+      },
+      "exportedName": "logoutUserSessions",
+      "filename": "lib/actions/admin.ts"
+    }
+  },
+  "edge": {}
+}

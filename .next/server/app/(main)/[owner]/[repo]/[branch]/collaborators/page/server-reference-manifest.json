@@ -1,0 +1,41 @@
+{
+  "node": {
+    "608afe3af45e771ba36134b987ce72a323e9792f23": {
+      "workers": {
+        "app/(main)/[owner]/[repo]/[branch]/collaborators/page": {
+          "moduleId": 808057,
+          "async": true,
+          "exportedName": "handleAddCollaborator",
+          "filename": "lib/actions/collaborator.ts"
+        }
+      },
+      "exportedName": "handleAddCollaborator",
+      "filename": "lib/actions/collaborator.ts"
+    },
+    "7016272f8714fbad0092717efd87fd704038be2608": {
+      "workers": {
+        "app/(main)/[owner]/[repo]/[branch]/collaborators/page": {
+          "moduleId": 808057,
+          "async": true,
+          "exportedName": "handleRemoveCollaborator",
+          "filename": "lib/actions/collaborator.ts"
+        }
+      },
+      "exportedName": "handleRemoveCollaborator",
+      "filename": "lib/actions/collaborator.ts"
+    },
+    "702fa286536e4fb473ae95ef431b266c31a4b5e0d4": {
+      "workers": {
+        "app/(main)/[owner]/[repo]/[branch]/collaborators/page": {
+          "moduleId": 808057,
+          "async": true,
+          "exportedName": "handleResendCollaboratorInvite",
+          "filename": "lib/actions/collaborator.ts"
+        }
+      },
+      "exportedName": "handleResendCollaboratorInvite",
+      "filename": "lib/actions/collaborator.ts"
+    }
+  },
+  "edge": {}
+}

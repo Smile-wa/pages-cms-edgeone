@@ -1,0 +1,3 @@
+{
+  "/(auth)/sign-in/collaborator/page": "app/(auth)/sign-in/collaborator/page.js"
+}

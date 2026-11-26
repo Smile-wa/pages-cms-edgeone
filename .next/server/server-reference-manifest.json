@@ -1,0 +1,90 @@
+{
+  "node": {
+    "60256b5c1d7f164a9baf9d8f724c462443c31bc03a": {
+      "workers": {
+        "app/(main)/page": {
+          "moduleId": 90975,
+          "async": true,
+          "exportedName": "handleCopyTemplate",
+          "filename": "lib/actions/template.ts"
+        }
+      },
+      "filename": "lib/actions/template.ts",
+      "exportedName": "handleCopyTemplate"
+    },
+    "608afe3af45e771ba36134b987ce72a323e9792f23": {
+      "workers": {
+        "app/(main)/[owner]/[repo]/[branch]/collaborators/page": {
+          "moduleId": 808057,
+          "async": true,
+          "exportedName": "handleAddCollaborator",
+          "filename": "lib/actions/collaborator.ts"
+        }
+      },
+      "filename": "lib/actions/collaborator.ts",
+      "exportedName": "handleAddCollaborator"
+    },
+    "7016272f8714fbad0092717efd87fd704038be2608": {
+      "workers": {
+        "app/(main)/[owner]/[repo]/[branch]/collaborators/page": {
+          "moduleId": 808057,
+          "async": true,
+          "exportedName": "handleRemoveCollaborator",
+          "filename": "lib/actions/collaborator.ts"
+        }
+      },
+      "filename": "lib/actions/collaborator.ts",
+      "exportedName": "handleRemoveCollaborator"
+    },
+    "702fa286536e4fb473ae95ef431b266c31a4b5e0d4": {
+      "workers": {
+        "app/(main)/[owner]/[repo]/[branch]/collaborators/page": {
+          "moduleId": 808057,
+          "async": true,
+          "exportedName": "handleResendCollaboratorInvite",
+          "filename": "lib/actions/collaborator.ts"
+        }
+      },
+      "filename": "lib/actions/collaborator.ts",
+      "exportedName": "handleResendCollaboratorInvite"
+    },
+    "00987da5071ebbdb6c2c651a66a6f2fdf29884da60": {
+      "workers": {
+        "app/(main)/admin/page": {
+          "moduleId": 691244,
+          "async": true,
+          "exportedName": "logoutAllUsers",
+          "filename": "lib/actions/admin.ts"
+        }
+      },
+      "filename": "lib/actions/admin.ts",
+      "exportedName": "logoutAllUsers"
+    },
+    "00f2f53a23965ee8fa4f2dde84c9559c588ced1e76": {
+      "workers": {
+        "app/(main)/admin/page": {
+          "moduleId": 691244,
+          "async": true,
+          "exportedName": "resetGlobalCache",
+          "filename": "lib/actions/admin.ts"
+        }
+      },
+      "filename": "lib/actions/admin.ts",
+      "exportedName": "resetGlobalCache"
+    },
+    "401de7aef7055e59b98b64dfa81b0f31a683b5852e": {
+      "workers": {
+        "app/(main)/admin/page": {
+          "moduleId": 691244,
+          "async": true,
+          "exportedName": "logoutUserSessions",
+          "filename": "lib/actions/admin.ts"
+        }
+      },
+      "filename": "lib/actions/admin.ts",
+      "exportedName": "logoutUserSessions"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "LtopTFjQ+Uj5pzbsDXQV6f6WRfcOsLhcPacMasg+lEw="
+}

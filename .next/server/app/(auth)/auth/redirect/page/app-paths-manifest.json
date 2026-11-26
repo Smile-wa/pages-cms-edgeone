@@ -1,0 +1,3 @@
+{
+  "/(auth)/auth/redirect/page": "app/(auth)/auth/redirect/page.js"
+}

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "functions": {
+    "/_middleware": {
+      "runtime": "nodejs",
+      "matchers": [
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next\\/static|_next\\/image|favicon.ico|icon.svg|images\\/|assets\\/).*))(\\.json)?[\\/#\\?]?$",
+          "originalSource": "/((?!_next/static|_next/image|favicon.ico|icon.svg|images/|assets/).*)"
+        }
+      ]
+    },
+    "/api/[owner]/[repo]/[branch]/actions": {
+      "maxDuration": 30
+    },
+    "/api/[owner]/[repo]/[branch]/actions/[runId]": {
+      "maxDuration": 30
+    },
+    "/api/[owner]/[repo]/[branch]/collections/[name]": {
+      "maxDuration": 30
+    },
+    "/api/[owner]/[repo]/[branch]/references/[name]": {
+      "maxDuration": 30
+    },
+    "/api/webhook/github": {
+      "maxDuration": 60
+    }
+  }
+}

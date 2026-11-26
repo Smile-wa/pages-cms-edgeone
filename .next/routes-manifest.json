@@ -1,0 +1,394 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/auth/[...all]",
+      "regex": "^/api/auth/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPall": "nxtPall"
+      },
+      "namedRegex": "^/api/auth/(?<nxtPall>.+?)(?:/)?$"
+    },
+    {
+      "page": "/api/collaborator-invites/[token]",
+      "regex": "^/api/collaborator\\-invites/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtoken": "nxtPtoken"
+      },
+      "namedRegex": "^/api/collaborator\\-invites/(?<nxtPtoken>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/collaborators/[...slug]",
+      "regex": "^/api/collaborators/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/collaborators/(?<nxtPslug>.+?)(?:/)?$"
+    },
+    {
+      "page": "/api/repos/[owner]",
+      "regex": "^/api/repos/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner"
+      },
+      "namedRegex": "^/api/repos/(?<nxtPowner>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/actions",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/actions(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/actions(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/actions/[runId]",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/actions/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPrunId": "nxtPrunId"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/actions/(?<nxtPrunId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/branches",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/branches(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/branches(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/cache",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/cache(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/cache(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/collections/[name]",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/collections/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/collections/(?<nxtPname>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/entries/[path]",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/entries/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/entries/(?<nxtPpath>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/entries/[path]/history",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/entries/([^/]+?)/history(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/entries/(?<nxtPpath>[^/]+?)/history(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/files/[path]",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/files/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/files/(?<nxtPpath>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/files/[path]/rename",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/files/([^/]+?)/rename(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/files/(?<nxtPpath>[^/]+?)/rename(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/media/[name]/[path]",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/media/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname",
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/media/(?<nxtPname>[^/]+?)/(?<nxtPpath>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[owner]/[repo]/[branch]/references/[name]",
+      "regex": "^/api/([^/]+?)/([^/]+?)/([^/]+?)/references/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname"
+      },
+      "namedRegex": "^/api/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/references/(?<nxtPname>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]",
+      "regex": "^/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/actions",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/actions(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/actions(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/cache",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/cache(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/cache(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/collaborators",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/collaborators(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/collaborators(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/collection/[name]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/collection/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/collection/(?<nxtPname>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/collection/[name]/edit/[path]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/collection/([^/]+?)/edit/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname",
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/collection/(?<nxtPname>[^/]+?)/edit/(?<nxtPpath>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/collection/[name]/new",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/collection/([^/]+?)/new(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/collection/(?<nxtPname>[^/]+?)/new(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/configuration",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/configuration(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/configuration(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/file/[name]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/file/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/file/(?<nxtPname>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/media/[name]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/media/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch",
+        "nxtPname": "nxtPname"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/media/(?<nxtPname>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[owner]/[repo]/[branch]/settings",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/settings(?:/)?$",
+      "routeKeys": {
+        "nxtPowner": "nxtPowner",
+        "nxtPrepo": "nxtPrepo",
+        "nxtPbranch": "nxtPbranch"
+      },
+      "namedRegex": "^/(?<nxtPowner>[^/]+?)/(?<nxtPrepo>[^/]+?)/(?<nxtPbranch>[^/]+?)/settings(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/api/app/version",
+      "regex": "^/api/app/version(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/app/version(?:/)?$"
+    },
+    {
+      "page": "/api/github-app/install",
+      "regex": "^/api/github\\-app/install(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/github\\-app/install(?:/)?$"
+    },
+    {
+      "page": "/api/webhook/github",
+      "regex": "^/api/webhook/github(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/webhook/github(?:/)?$"
+    },
+    {
+      "page": "/auth/redirect",
+      "regex": "^/auth/redirect(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/redirect(?:/)?$"
+    },
+    {
+      "page": "/icon.svg",
+      "regex": "^/icon\\.svg(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.svg(?:/)?$"
+    },
+    {
+      "page": "/settings",
+      "regex": "^/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings(?:/)?$"
+    },
+    {
+      "page": "/sign-in",
+      "regex": "^/sign\\-in(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sign\\-in(?:/)?$"
+    },
+    {
+      "page": "/sign-in/collaborator",
+      "regex": "^/sign\\-in/collaborator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sign\\-in/collaborator(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
