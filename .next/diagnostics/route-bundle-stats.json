@@ -503,7 +503,7 @@
   },
   {
     "route": "/sign-in",
-    "firstLoadUncompressedJsBytes": 718385,
+    "firstLoadUncompressedJsBytes": 718812,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\0iojl0n6id96v.js",
       ".next\\static\\chunks\\0ymoq65e7z09j.js",
@@ -514,7 +514,7 @@
       ".next\\static\\chunks\\0bt4-z6mhgt6s.js",
       ".next\\static\\chunks\\00swomu3_.nc~.js",
       ".next\\static\\chunks\\067k08~j-8fzt.js",
-      ".next\\static\\chunks\\0ok5fczjqpne_.js",
+      ".next\\static\\chunks\\0pdu25w001.27.js",
       ".next\\static\\chunks\\0hpnrek~99o9g.js",
       ".next\\static\\chunks\\0wvnwo9egwg8y.js",
       ".next\\static\\chunks\\077~cyi32q635.js",

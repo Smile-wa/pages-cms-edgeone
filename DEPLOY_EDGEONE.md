@@ -299,7 +299,8 @@ npm run setup:github-app -- --base-url https://cms.example.com
 | 控制台提示变量值有特殊字符 | 粘贴时带了引号、空格、换行或 PEM 原文 | 只复制 `=` 后面的十六进制串；密钥用 `openssl rand -hex 32` 生成 |
 | 登录后跳转回首页 | GitHub App 回调地址还是本地地址 | 重新执行第 8 步 |
 | 获取 installation token 报私钥错误 | 分片有缺号、值被改动，或同时设置了错误的单变量 | 确认 `_1` 起连续无缺口、值仅含 `0-9a-f`，且未设置 `GITHUB_APP_PRIVATE_KEY` |
-| 所有写操作返回 403 | CSRF 校验拿不到正确 Host | 确认 EdgeOne 透传 `Origin` / `Host`；代码已兼容 `x-forwarded-host` |
+| 点击 GitHub 登录提示 “Could not start GitHub sign-in” | 登录接口返回了无文本的错误（常见是 HTTP 403），旧代码只显示通用提示 | 页面现在会显示具体状态码；若看到 403，检查 `BASE_URL` 是否为正式域名、`GITHUB_APP_CLIENT_ID` / `GITHUB_APP_CLIENT_SECRET` 是否正确，并查看 EdgeOne 函数日志 |
+| 所有写操作返回 403 | CSRF 校验拿不到正确 Host | 代码已兼容 `Origin` / `Referer` / `Sec-Fetch-Site` 和 `x-forwarded-host`；`/api/auth/*` 由 Better Auth 自行校验 |
 | 数据库连接数打满 | Serverless 并发 × 连接池过大 | 调低 `POSTGRES_MAX_CONNECTIONS`，或使用数据库池化地址 |
 | Webhook 事件偶尔丢失 | 平台不支持 `after()` 后台任务 | 代码已先等待最多 8 秒；如仍有问题，可改为完全同步处理 |
 | 页面样式或脚本 404 | 输出目录配错 | 必须是 `.next`，不是 `out` |

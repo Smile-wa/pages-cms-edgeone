@@ -13,20 +13,40 @@ function isAllowedOrigin(originHeader: string, hostHeaders: (string | null)[]): 
 	}
 }
 
+// EdgeOne may strip or rewrite Origin/Host on the way to the function. Accept
+// any browser-provided same-site signal instead of requiring Origin alone.
+// Better Auth performs its own CSRF validation for /api/auth/*, so those
+// routes are intentionally left to it.
+function isSameSiteRequest(request: NextRequest): boolean {
+	const hosts = [
+		request.headers.get("Host"),
+		request.headers.get("x-forwarded-host"),
+		request.nextUrl.host,
+	];
+
+	const origin = request.headers.get("Origin");
+	if (origin) return isAllowedOrigin(origin, hosts);
+
+	const referer = request.headers.get("Referer");
+	if (referer) return isAllowedOrigin(referer, hosts);
+
+	const fetchSite = request.headers.get("Sec-Fetch-Site");
+	return fetchSite === "same-origin" || fetchSite === "none";
+}
+
 export function proxy(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
-	if (pathname.startsWith("/api/") && pathname !== "/api/webhook/github" && request.method !== "GET") {
-		const originHeader = request.headers.get("Origin");
-		const hostHeaders = [
-			request.headers.get("Host"),
-			request.headers.get("x-forwarded-host"),
-			request.nextUrl.host,
-		];
-		if (!originHeader || !isAllowedOrigin(originHeader, hostHeaders)) {
-			return new NextResponse(null, {
-				status: 403
-			});
-		}
+	const isAuthRoute = pathname.startsWith("/api/auth/");
+	if (
+		pathname.startsWith("/api/") &&
+		pathname !== "/api/webhook/github" &&
+		!isAuthRoute &&
+		request.method !== "GET" &&
+		!isSameSiteRequest(request)
+	) {
+		return new NextResponse(null, {
+			status: 403
+		});
 	}
 
 	const requestHeaders = new Headers(request.headers);

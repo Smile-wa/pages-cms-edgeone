@@ -14,6 +14,9 @@ import { render } from "@react-email/render";
 
 export const auth = betterAuth({
   baseURL: getBaseUrl(),
+  // Explicitly trust the canonical URL so EdgeOne's forwarded headers do not
+  // make Better Auth reject same-origin sign-in requests.
+  trustedOrigins: [getBaseUrl()],
   secret: (process.env.AUTH_SECRET || process.env.BETTER_AUTH_SECRET) as string,
   user: {
     additionalFields: {

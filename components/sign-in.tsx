@@ -46,6 +46,16 @@ export function SignIn() {
     if (email) setEmail(email.trim().toLowerCase());
   }, [searchParams]);
 
+  const describeSignInError = (error: any) => {
+    const message = error?.message || error?.error?.message;
+    if (message) return message;
+    if (error?.status) {
+      const statusText = error.statusText ? ` ${error.statusText}` : "";
+      return `GitHub sign-in failed (HTTP ${error.status}${statusText}). Check BASE_URL, GITHUB_APP_CLIENT_ID/SECRET, BETTER_AUTH_SECRET and EdgeOne function logs.`;
+    }
+    return "Could not start GitHub sign-in. Please try again.";
+  };
+
   const handleGithubSignIn = async () => {
     setSubmittingMethod("github");
     try {
@@ -55,8 +65,9 @@ export function SignIn() {
         errorCallbackURL,
         disableRedirect: true,
       });
-      if (result.error?.message) {
-        toast.error(result.error.message);
+      if (result.error) {
+        console.error("[sign-in] social sign-in failed", result.error);
+        toast.error(describeSignInError(result.error));
         setSubmittingMethod(null);
         return;
       }
@@ -66,10 +77,12 @@ export function SignIn() {
         return;
       }
 
+      console.error("[sign-in] social sign-in returned no URL", result);
       setSubmittingMethod(null);
       toast.error("Could not start GitHub sign-in. Please try again.");
     } catch (error: any) {
-      toast.error(error?.message || "Could not start GitHub sign-in.");
+      console.error("[sign-in] social sign-in threw", error);
+      toast.error(describeSignInError(error));
       setSubmittingMethod(null);
     }
   };
