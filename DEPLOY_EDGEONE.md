@@ -30,7 +30,7 @@ EdgeOne Makers 不提供 PostgreSQL，需要自备数据库。建议使用腾讯
 postgresql://用户名:密码@主机:端口/数据库名?sslmode=require
 ```
 
-如果云厂商提供**连接池地址**，优先使用连接池地址。本项目默认每个 Serverless 实例最多保持 3 个连接，可通过 `POSTGRES_MAX_CONNECTIONS` 调整。
+如果云厂商提供**连接池地址**，优先使用连接池地址。如果密码里有 `@`、`:`、`/`、`?` 等字符，先在连接串中做 URL 编码（例如 `@` 写成 `%40`），避免解析错误。本项目默认每个 Serverless 实例最多保持 3 个连接，可通过 `POSTGRES_MAX_CONNECTIONS` 调整。
 
 > 不要把密码写进仓库文件。后面的环境变量在 EdgeOne 控制台配置。
 
@@ -64,23 +64,23 @@ DATABASE_URL="postgresql://用户名:密码@主机:端口/数据库名?sslmode=r
 | `CRYPTO_KEY` | 随机字符串 | 加密密钥 |
 | `GITHUB_APP_ID` | `123456` | GitHub App ID |
 | `GITHUB_APP_NAME` | `my-pages-cms` | GitHub App machine name |
-| `GITHUB_APP_PRIVATE_KEY_1` / `_2` / ... | PEM 分片 | GitHub App 私钥；EdgeOne 单变量放不下时使用分片 |
+| `GITHUB_APP_PRIVATE_KEY_1` / `_2` / ... | 十六进制字符串 | GitHub App 私钥的十六进制分片；只含 `0-9`、`a-f`，无空格/换行/符号 |
 | `GITHUB_APP_WEBHOOK_SECRET` | 随机字符串 | Webhook 签名密钥 |
 | `GITHUB_APP_CLIENT_ID` | `Iv1.xxx` | OAuth Client ID |
 | `GITHUB_APP_CLIENT_SECRET` | `xxx` | OAuth Client Secret |
-| `EMAIL_FROM` | `Pages CMS <no-reply@example.com>` | 发件人 |
+| `EMAIL_FROM` | `no-reply@example.com` | 发件人；建议纯邮箱地址，避免空格和尖括号 |
 
-生成随机密钥：
+生成随机密钥（十六进制输出，只有 `0-9`、`a-f`，不会被 EdgeOne 拒绝）：
 
 ```bash
-openssl rand -base64 32
+openssl rand -hex 32
 ```
 
 ### 3.2 GitHub App 私钥分片（重要）
 
-EdgeOne 单个环境变量的值上限约 **1000 字节**，而 GitHub App 的 PEM 私钥通常是 1600～3400 字节，直接配置会被拒绝。
+EdgeOne 单个环境变量的值上限约 **1000 字节**，而且值里**不能有空格、换行、制表符等字符**；GitHub App 的 PEM 私钥通常是 1600～3400 字节，无法直接配置。
 
-项目已支持把私钥拆成多个环境变量，在运行时自动拼接。把私钥保存为本地 `private-key.pem`，在项目根目录执行：
+项目已支持把私钥**编码成十六进制**后拆成多个环境变量，在运行时解码拼接。十六进制只含 `0-9` 和 `a-f`，完全符合 EdgeOne 的限制。把私钥保存为本地 `private-key.pem`，在项目根目录执行：
 
 ```bash
 npm run key:split -- private-key.pem
@@ -89,22 +89,23 @@ npm run key:split -- private-key.pem
 输出类似：
 
 ```text
-# 4 chunk(s), 1704 bytes total
-GITHUB_APP_PRIVATE_KEY_1=-----BEGIN RSA PRIVATE KEY-----\nMIIE...
+# 4 chunk(s), 3408 hex chars
+GITHUB_APP_PRIVATE_KEY_1=2d2d2d2d2d424547494e205253412050524956415445204b45592d2d2d...
 GITHUB_APP_PRIVATE_KEY_2=...
 GITHUB_APP_PRIVATE_KEY_3=...
-GITHUB_APP_PRIVATE_KEY_4=...\n-----END RSA PRIVATE KEY-----
+GITHUB_APP_PRIVATE_KEY_4=...
 ```
 
-在 EdgeOne 控制台**逐条创建** `GITHUB_APP_PRIVATE_KEY_1`、`GITHUB_APP_PRIVATE_KEY_2`……直到最后一个分片。
+**每条 `=` 后面的整串字符**就是一个环境变量的值，复制到 EdgeOne 控制台逐条创建 `GITHUB_APP_PRIVATE_KEY_1`、`GITHUB_APP_PRIVATE_KEY_2`……直到最后一个分片。
 
 注意：
 
 - 分片编号从 1 开始，必须连续，不能中间缺号。
 - 使用分片时**不要**再设置 `GITHUB_APP_PRIVATE_KEY`，否则单变量值会优先生效。
-- 默认每片最多 450 字节，留出足够安全余量；如需调整可用 `--max-bytes 450`。
-- 代码会先把 `\n` 还原成真实换行，再交给 Octokit，因此不需要手动改私钥内容。
-- 本地开发仍可直接使用单行 `GITHUB_APP_PRIVATE_KEY`（见 `.env.local.example`），两种方式兼容。
+- 默认每片最多 900 个十六进制字符（约 450 字节原始私钥），远低于 1000 字节上限；如需调整用 `--max-chars 900`（允许 100～950）。
+- 复制时不要带引号、空格或换行；值本身就是纯十六进制字符串。
+- 代码会先把十六进制还原成 PEM（含真实换行），再交给 Octokit，不需要手动处理。
+- 本地开发仍可直接使用 PEM 内容作为 `GITHUB_APP_PRIVATE_KEY`（见 `.env.local.example`），两种方式兼容。
 
 ### 3.3 邮件与可选变量
 
@@ -170,7 +171,8 @@ FILE_TTL_MIN=1440
 
 - `BASE_URL` 使用正式域名，例如 `https://cms.example.com`
 - `DATABASE_URL` 带 `sslmode=require`
-- GitHub App 私钥按 `GITHUB_APP_PRIVATE_KEY_1`、`_2`……分片配置，不要同时设置单变量 `GITHUB_APP_PRIVATE_KEY`
+- GitHub App 私钥按 `GITHUB_APP_PRIVATE_KEY_1`、`_2`……分片配置，值为纯十六进制字符串，不要同时设置单变量 `GITHUB_APP_PRIVATE_KEY`
+- 如果控制台提示变量值不能包含空格/换行/特殊字符，检查是否误带了引号、注释或 PEM 原文；所有密钥类变量建议用 `openssl rand -hex 32` 生成
 - `BETTER_AUTH_SECRET` 不要在构建日志中暴露
 
 构建阶段即使没有 `BASE_URL` 也能完成（代码会回退到占位 URL），但**运行时必须设置**，否则认证相关功能会报错。
@@ -293,9 +295,10 @@ npm run setup:github-app -- --base-url https://cms.example.com
 | 构建失败，提示缺少数据库 | 构建环境有误连数据库的步骤 | 确认 `postbuild` 已移除；迁移改为手动执行 |
 | 构建失败，提示 `BASE_URL` | 旧代码仍在模块顶层抛错 | 确认 `lib/base-url.ts` 已更新 |
 | 构建时 Google Fonts 下载失败 | 构建容器无法出网 | 开放出网，或改成本地字体 |
-| EdgeOne 拒绝保存 `GITHUB_APP_PRIVATE_KEY` | 变量值超过约 1000 字节上限 | 按 3.2 节用 `npm run key:split` 拆成 `_1`、`_2`……分片 |
+| EdgeOne 拒绝保存 `GITHUB_APP_PRIVATE_KEY` | 值超过约 1000 字节上限，或含空格/换行/符号 | 按 3.2 节用 `npm run key:split` 生成纯十六进制分片 |
+| 控制台提示变量值有特殊字符 | 粘贴时带了引号、空格、换行或 PEM 原文 | 只复制 `=` 后面的十六进制串；密钥用 `openssl rand -hex 32` 生成 |
 | 登录后跳转回首页 | GitHub App 回调地址还是本地地址 | 重新执行第 8 步 |
-| 获取 installation token 报私钥错误 | 分片有缺号，或同时设置了错误的单变量 | 确认 `_1` 起连续无缺口，且未设置 `GITHUB_APP_PRIVATE_KEY` |
+| 获取 installation token 报私钥错误 | 分片有缺号、值被改动，或同时设置了错误的单变量 | 确认 `_1` 起连续无缺口、值仅含 `0-9a-f`，且未设置 `GITHUB_APP_PRIVATE_KEY` |
 | 所有写操作返回 403 | CSRF 校验拿不到正确 Host | 确认 EdgeOne 透传 `Origin` / `Host`；代码已兼容 `x-forwarded-host` |
 | 数据库连接数打满 | Serverless 并发 × 连接池过大 | 调低 `POSTGRES_MAX_CONNECTIONS`，或使用数据库池化地址 |
 | Webhook 事件偶尔丢失 | 平台不支持 `after()` 后台任务 | 代码已先等待最多 8 秒；如仍有问题，可改为完全同步处理 |

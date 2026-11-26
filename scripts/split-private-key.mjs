@@ -1,26 +1,28 @@
 #!/usr/bin/env node
 
 /**
- * Split a GitHub App PEM key into EdgeOne-friendly env var chunks.
+ * Encode a GitHub App PEM key as hex and split it into EdgeOne-friendly
+ * environment variables. Hex values contain ONLY 0-9 and a-f: no spaces,
+ * newlines, tabs or other special characters.
  *
  * Usage:
  *   node scripts/split-private-key.mjs private-key.pem
- *   node scripts/split-private-key.mjs private-key.pem --max-bytes 450
+ *   node scripts/split-private-key.mjs private-key.pem --max-chars 900
  */
 
 import { readFileSync } from "node:fs";
 
 const args = process.argv.slice(2);
 const file = args.find((arg) => !arg.startsWith("--"));
-const maxBytesArg = args.indexOf("--max-bytes");
-const maxBytes =
-  maxBytesArg >= 0 ? Number.parseInt(args[maxBytesArg + 1] || "", 10) : 450;
+const maxCharsArg = args.indexOf("--max-chars");
+const maxChars =
+  maxCharsArg >= 0 ? Number.parseInt(args[maxCharsArg + 1] || "", 10) : 900;
 
-if (!file || !Number.isFinite(maxBytes) || maxBytes < 100 || maxBytes > 1000) {
+if (!file || !Number.isFinite(maxChars) || maxChars < 100 || maxChars > 950) {
   console.error(
-    "Usage: node scripts/split-private-key.mjs <private-key.pem> [--max-bytes 450]",
+    "Usage: node scripts/split-private-key.mjs <private-key.pem> [--max-chars 900]",
   );
-  console.error("--max-bytes must be between 100 and 1000.");
+  console.error("--max-chars must be between 100 and 950.");
   process.exit(1);
 }
 
@@ -33,16 +35,16 @@ if (!pem.startsWith("-----BEGIN") || !pem.includes("PRIVATE KEY-----")) {
   process.exit(1);
 }
 
-// Store newlines as literal \n so every value stays on one line.
-const singleLine = pem.replace(/\n/g, "\\n");
-const buffer = Buffer.from(singleLine, "utf8");
+// Hex encoding keeps every chunk within a strict alphanumeric-only value.
+const encoded = Buffer.from(pem, "utf8").toString("hex");
 const chunks = [];
 
-for (let offset = 0; offset < buffer.length; offset += maxBytes) {
-  chunks.push(buffer.subarray(offset, offset + maxBytes).toString("utf8"));
+for (let offset = 0; offset < encoded.length; offset += maxChars) {
+  chunks.push(encoded.slice(offset, offset + maxChars));
 }
 
-console.log(`# ${chunks.length} chunk(s), ${buffer.length} bytes total`);
+console.log(`# ${chunks.length} chunk(s), ${encoded.length} hex chars`);
+console.log("# Values contain only 0-9 and a-f (no spaces or line breaks).");
 console.log("# Copy each line into EdgeOne as a separate environment variable.");
 console.log("# Do NOT also set GITHUB_APP_PRIVATE_KEY when using chunks.\n");
 
