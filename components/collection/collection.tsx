@@ -448,7 +448,7 @@ export function Collection({ name, path }: { name: string; path?: string }) {
         const renamePromise = new Promise(async (resolve, reject) => {
           try {
             const response = await fetch(
-              `/api/${config.owner}/${config.repo}/${encodeURIComponent(config.branch)}/files/${encodeURIComponent(normalizedPath)}/rename`,
+              `/api/${config.owner}/${config.repo}/${encodeURIComponent(config.branch)}/files/rename/${encodeURIComponent(normalizedPath)}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

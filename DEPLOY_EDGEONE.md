@@ -40,13 +40,23 @@ postgresql://用户名:密码@主机:端口/数据库名?sslmode=require
 
 项目已移除构建期的自动迁移（`postbuild`），因此**部署前必须手动执行一次**。
 
-在项目根目录执行：
+用**与 EdgeOne 控制台完全相同的** `DATABASE_URL`，在项目根目录执行：
 
 ```bash
 DATABASE_URL="postgresql://用户名:密码@主机:端口/数据库名?sslmode=require" npm run db:migrate
 ```
 
-看到迁移执行完成即可。其中包含 0000～0013 号迁移；0013 会新增两个大小写不敏感的表达式索引，用于加速仓库/文件缓存查询。
+迁移完成后，先用下面的命令确认表已经建好：
+
+```bash
+DATABASE_URL="postgresql://用户名:密码@主机:端口/数据库名?sslmode=require" npm run db:check
+```
+
+看到 `OK: all 12 required tables exist.` 才算成功。这个检查会确认 `user`、`session`、`account`、`verification` 等登录必需的表都存在。
+
+> 如果密码里有 `@`、`:`、`/`、`?` 等字符，记得在连接串里做 URL 编码（例如 `@` 写成 `%40`），否则可能连到错误的库或直接连接失败。
+
+其中包含 0000～0013 号迁移；0013 会新增两个大小写不敏感的表达式索引，用于加速仓库/文件缓存查询。
 
 后续如果更新了 `db/migrations` 中的表结构，也要在**新版本部署前**再次执行同样命令。
 
@@ -242,6 +252,9 @@ GitHub App 需要配置：
 - Callback URL：`https://cms.example.com/api/auth/callback/github`
 - Webhook URL：`https://cms.example.com/api/webhook/github`
 - Webhook secret：与 `GITHUB_APP_WEBHOOK_SECRET` 一致
+- **Account permissions → Email addresses：`Read only`**（否则 GitHub 不返回邮箱，登录会报 `email_not_found`；改完权限后需要重新安装/重新授权 App）
+
+如果用 `npm run setup:github-app` 创建 App，助手已经自动设置该权限；手动创建时务必自己勾选。
 
 两种方式二选一：
 
@@ -292,14 +305,18 @@ npm run setup:github-app -- --base-url https://cms.example.com
 
 | 现象 | 原因 | 处理 |
 | --- | --- | --- |
+| 登录报 `relation "verification" does not exist` / HTTP 500 | 生产库没执行迁移，或迁移连到了另一个数据库 | 用 EdgeOne 中**同一个** `DATABASE_URL` 执行 `npm run db:migrate`，再用 `npm run db:check` 确认 12 张表齐全 |
 | 构建失败，提示缺少数据库 | 构建环境有误连数据库的步骤 | 确认 `postbuild` 已移除；迁移改为手动执行 |
 | 构建失败，提示 `BASE_URL` | 旧代码仍在模块顶层抛错 | 确认 `lib/base-url.ts` 已更新 |
 | 构建时 Google Fonts 下载失败 | 构建容器无法出网 | 开放出网，或改成本地字体 |
 | EdgeOne 拒绝保存 `GITHUB_APP_PRIVATE_KEY` | 值超过约 1000 字节上限，或含空格/换行/符号 | 按 3.2 节用 `npm run key:split` 生成纯十六进制分片 |
 | 控制台提示变量值有特殊字符 | 粘贴时带了引号、空格、换行或 PEM 原文 | 只复制 `=` 后面的十六进制串；密钥用 `openssl rand -hex 32` 生成 |
+| 点击文章编辑提示 `The page or resource you requested could not be found.` | 旧版单段 `[path]` 路由在 EdgeOne 解码 `%2F` 后无法匹配含 `/` 的文件路径 | 已改为 catch-all `[...path]`（编辑页、entries、files、media、history、rename），重新部署即可 |
+| 邮箱登录后打不开仓库或编辑页 | 邮箱账号自身没有 GitHub 仓库权限 | 用 GitHub 登录，或在仓库 `.pages.yml` 的 collaborators 中添加该邮箱；否则会显示 Access denied |
+| 登录报 `email_not_found` / `User email not found` | GitHub App 没有“Email addresses: Read only”权限，或旧授权未刷新 | 在 GitHub App 权限中开启 Email addresses 只读并保存，重新安装/重新授权 App；代码也会用 GitHub noreply 邮箱兜底 |
 | 登录后跳转回首页 | GitHub App 回调地址还是本地地址 | 重新执行第 8 步 |
 | 获取 installation token 报私钥错误 | 分片有缺号、值被改动，或同时设置了错误的单变量 | 确认 `_1` 起连续无缺口、值仅含 `0-9a-f`，且未设置 `GITHUB_APP_PRIVATE_KEY` |
-| 点击 GitHub 登录提示 “Could not start GitHub sign-in” | 登录接口返回了无文本的错误（常见是 HTTP 403），旧代码只显示通用提示 | 页面现在会显示具体状态码；若看到 403，检查 `BASE_URL` 是否为正式域名、`GITHUB_APP_CLIENT_ID` / `GITHUB_APP_CLIENT_SECRET` 是否正确，并查看 EdgeOne 函数日志 |
+| 点击 GitHub 登录提示 “Could not start GitHub sign-in” | 登录接口返回了错误；旧代码只显示通用提示 | 页面现在会显示具体状态码：403 检查 `BASE_URL` 和 GitHub App 凭据；500 且日志含 `verification does not exist` 则按上一条执行数据库迁移 |
 | 所有写操作返回 403 | CSRF 校验拿不到正确 Host | 代码已兼容 `Origin` / `Referer` / `Sec-Fetch-Site` 和 `x-forwarded-host`；`/api/auth/*` 由 Better Auth 自行校验 |
 | 数据库连接数打满 | Serverless 并发 × 连接池过大 | 调低 `POSTGRES_MAX_CONNECTIONS`，或使用数据库池化地址 |
 | Webhook 事件偶尔丢失 | 平台不支持 `after()` 后台任务 | 代码已先等待最多 8 秒；如仍有问题，可改为完全同步处理 |

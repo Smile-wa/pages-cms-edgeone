@@ -30,11 +30,20 @@ export function SignIn() {
       : `/sign-in?redirect=${encodeURIComponent(safeRedirect)}`;
 
   const getErrorMessage = (value: string) => {
-    if (value.toLowerCase() !== "unable_to_get_user_info") return value;
-    return [
-      "GitHub denied profile access. Re-authorize Pages CMS in GitHub Settings > Applications > Authorized GitHub Apps / Authorized OAuth Apps, then try again.",
-      "https://github.com/settings/applications",
-    ].join(" ");
+    const normalized = value.toLowerCase();
+    if (normalized === "unable_to_get_user_info") {
+      return [
+        "GitHub denied profile access. Re-authorize Pages CMS in GitHub Settings > Applications > Authorized GitHub Apps / Authorized OAuth Apps, then try again.",
+        "https://github.com/settings/applications",
+      ].join(" ");
+    }
+    if (normalized === "email_not_found" || normalized === "user_email_not_found") {
+      return [
+        "GitHub did not provide an email address. In your GitHub App, enable Account permissions > Email addresses: Read only, save, reinstall the app, then sign in again.",
+        "https://github.com/settings/apps",
+      ].join(" ");
+    }
+    return value;
   };
 
   useEffect(() => {

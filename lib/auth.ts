@@ -68,23 +68,54 @@ export const auth = betterAuth({
 
         let emails:
           | Array<{ email: string; primary: boolean; verified: boolean; visibility: "public" | "private" }>
-          | undefined;
+          = [];
+        const emailHeaders = {
+          Authorization: `Bearer ${token.accessToken}`,
+          "User-Agent": "better-auth",
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        };
+
         try {
           const emailsResponse = await fetch("https://api.github.com/user/emails", {
-            headers: {
-              Authorization: `Bearer ${token.accessToken}`,
-              "User-Agent": "better-auth",
-            },
+            headers: emailHeaders,
           });
           if (emailsResponse.ok) {
             emails = await emailsResponse.json();
+          } else {
+            console.warn("[auth] github /user/emails failed", {
+              status: emailsResponse.status,
+              githubRequestId: emailsResponse.headers.get("x-github-request-id"),
+              hint: "GitHub App needs Account permissions > Email addresses: Read only",
+            });
           }
-        } catch {}
-
-        if (!profile.email && emails) {
-          profile.email = (emails.find((entry) => entry.primary) ?? emails[0])?.email as string;
+        } catch (error) {
+          console.warn("[auth] github /user/emails threw", {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
-        const emailVerified = emails?.find((entry) => entry.email === profile.email)?.verified ?? false;
+
+        const email =
+          profile.email ||
+          emails.find((entry) => entry.primary && entry.verified)?.email ||
+          emails.find((entry) => entry.primary)?.email ||
+          emails.find((entry) => entry.verified)?.email ||
+          emails[0]?.email ||
+          // GitHub Apps without the email permission still expose id/login.
+          // Use GitHub's own noreply pattern so sign-in does not hard-fail.
+          (profile.id && profile.login
+            ? `${profile.id}+${profile.login}@users.noreply.github.com`
+            : null);
+
+        if (!profile.email && emails.length === 0) {
+          console.warn("[auth] using GitHub noreply email fallback", {
+            githubId: profile.id,
+            login: profile.login,
+          });
+        }
+
+        const emailVerified = emails.some((entry) => entry.email === email && entry.verified);
+        profile.email = email;
 
         const userMap = {
           name: profile.name ?? profile.login,
@@ -95,7 +126,7 @@ export const auth = betterAuth({
         return {
           user: {
             id: profile.id,
-            email: profile.email,
+            email,
             emailVerified,
             ...userMap,
           },

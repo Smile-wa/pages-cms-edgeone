@@ -273,7 +273,7 @@ export function Entry({
 
   const historyApiUrl = useMemo(() => (
     path
-      ? `/api/${config.owner}/${config.repo}/${encodeURIComponent(config.branch)}/entries/${encodeURIComponent(path)}/history?name=${encodeURIComponent(name)}`
+      ? `/api/${config.owner}/${config.repo}/${encodeURIComponent(config.branch)}/entries/history/${encodeURIComponent(path)}?name=${encodeURIComponent(name)}`
       : null
   ), [config.branch, config.owner, config.repo, name, path]);
 
@@ -343,7 +343,7 @@ export function Entry({
         ) {
           const newPath = joinPathSegments([getParentPath(savePath), normalizedFilename]);
           const renameResponse = await fetch(
-            `/api/${config.owner}/${config.repo}/${encodeURIComponent(config.branch)}/files/${encodeURIComponent(savePath)}/rename`,
+            `/api/${config.owner}/${config.repo}/${encodeURIComponent(config.branch)}/files/rename/${encodeURIComponent(savePath)}`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
